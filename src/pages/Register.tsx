@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Container, Paper, Stack, TextField, Typography, IconButton, InputAdornment, Drawer, List, ListItem, ListItemText, FormControl, InputLabel, Select, MenuItem, Autocomplete } from '@mui/material';
+import { Box, Button, Container, Paper, Stack, TextField, Typography, IconButton, InputAdornment, Drawer, List, ListItem, ListItemText, FormControl, InputLabel, Select, MenuItem, Autocomplete, Alert } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { login as loginApi } from '../services/auth';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { listCompanies, Company } from '../services/companies';
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -39,6 +42,28 @@ export default function Register() {
     return digits.replace(/(\d{2})(\d)/, '($1) $2').replace(/(\d{5})(\d)/, '$1-$2');
   };
   const [phone, setPhone] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companiesLoading, setCompaniesLoading] = useState(false);
+  const [companiesError, setCompaniesError] = useState<string | null>(null);
+  const [companiesQuery, setCompaniesQuery] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      try {
+        setCompaniesLoading(true);
+        setCompaniesError(null);
+        const items = await listCompanies();
+        setCompanies(items.filter((c) => c.ativo !== false));
+      } catch {
+        setCompaniesError('Falha ao carregar empresas.');
+      } finally {
+        setCompaniesLoading(false);
+      }
+    })();
+  }, []);
   return (
     <Container
       maxWidth="sm"
@@ -83,8 +108,32 @@ export default function Register() {
         <Typography variant="h5" component="h1" color="primary" sx={{ mb: 2, textAlign: 'center' }}>
           Criar conta
         </Typography>
-        <Box component="form">
+        <Box component="form" onSubmit={async (e) => {
+          e.preventDefault();
+          setError(null);
+          try {
+            setLoading(true);
+            // Aqui normalmente faria registro; como placeholder, vamos logar direto se já tiver email/senha
+            const form = new FormData(e.currentTarget as HTMLFormElement);
+            const email = String(form.get('email') || '');
+            const password = String(form.get('password') || '');
+            if (!email || !password) {
+              setError('Preencha e-mail e senha.');
+              setLoading(false);
+              return;
+            }
+            await loginApi(email, password, selectedCompany || undefined);
+            navigate('/home');
+          } catch (err: any) {
+            setError(err?.response?.data?.message || 'Erro ao registrar/logar.');
+          } finally {
+            setLoading(false);
+          }
+        }}>
           <Stack spacing={2}>
+            {error && (
+              <Alert severity="error">{error}</Alert>
+            )}
             <Button variant="outlined" onClick={() => setCompanyDrawerOpen(true)}>
               {selectedCompany ? `Empresa: ${selectedCompany}` : 'Selecionar empresa'}
             </Button>
@@ -169,7 +218,7 @@ export default function Register() {
                 ),
               }}
             />
-            <Button type="submit" variant="contained" size="large">
+            <Button type="submit" variant="contained" size="large" disabled={loading}>
               Registrar
             </Button>
             <Button href="/login" variant="text">
@@ -188,16 +237,39 @@ export default function Register() {
           <Typography variant="h6" sx={{ mb: 2 }}>
             Escolher empresa
           </Typography>
+          <TextField
+            size="small"
+            placeholder="Buscar empresa"
+            value={companiesQuery}
+            onChange={(e) => setCompaniesQuery(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+          {companiesLoading && (
+            <Typography variant="body2" sx={{ mb: 1 }}>Carregando...</Typography>
+          )}
+          {companiesError && (
+            <Typography color="error" variant="body2" sx={{ mb: 1 }}>{companiesError}</Typography>
+          )}
           <List>
-            <ListItem disablePadding>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => { setSelectedCompany('Empresa Teste'); setCompanyDrawerOpen(false); }}
-              >
-                Empresa Teste
-              </Button>
-            </ListItem>
+            {companies
+              .filter((c) =>
+                companiesQuery
+                  ? c.name.toLowerCase().includes(companiesQuery.toLowerCase()) ||
+                    (c.cidade || '').toLowerCase().includes(companiesQuery.toLowerCase())
+                  : true
+              )
+              .map((c) => (
+                <ListItem key={c.id} disablePadding>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => { setSelectedCompany(c.name); setCompanyDrawerOpen(false); }}
+                  >
+                    {c.name}
+                  </Button>
+                </ListItem>
+              ))}
           </List>
           <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 2 }}>
             <Button onClick={() => setCompanyDrawerOpen(false)}>Fechar</Button>

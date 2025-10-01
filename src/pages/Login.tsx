@@ -21,12 +21,21 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { useNavigate } from 'react-router-dom';
+import { login as loginApi } from '../services/auth';
+import { listCompanies, Company } from '../services/companies';
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [companyDrawerOpen, setCompanyDrawerOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companiesLoading, setCompaniesLoading] = useState(false);
+  const [companiesError, setCompaniesError] = useState<string | null>(null);
+  const [companiesQuery, setCompaniesQuery] = useState('');
 
   // Bloqueia scroll enquanto a tela de login está ativa
   useEffect(() => {
@@ -37,7 +46,24 @@ export default function Login() {
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const loadCompanies = async () => {
+    try {
+      setCompaniesLoading(true);
+      setCompaniesError(null);
+      const items = await listCompanies();
+      setCompanies(items.filter((c) => c.ativo !== false));
+    } catch (e: any) {
+      setCompaniesError('Falha ao carregar empresas. Verifique a API.');
+      setCompanies([]);
+    } finally {
+      setCompaniesLoading(false);
+    }
+  };
+  useEffect(() => {
+    loadCompanies();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
     const email = String(data.get('email') || '');
@@ -47,7 +73,15 @@ export default function Login() {
       setError('Preencha e-mail e senha.');
       return;
     }
-    // TODO: Integrar com API
+    try {
+      setLoading(true);
+      await loginApi(email, password, selectedCompany || undefined);
+      navigate('/home');
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Falha no login. Verifique suas credenciais.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -127,7 +161,7 @@ export default function Login() {
                 }}
               />
               <FormControlLabel control={<Checkbox name="remember" color="primary" />} label="Lembrar de mim" />
-              <Button type="submit" variant="contained" size="large">
+              <Button type="submit" variant="contained" size="large" disabled={loading}>
                 Entrar
               </Button>
               <Button href="/register" variant="outlined" size="large">
@@ -152,16 +186,49 @@ export default function Login() {
           <Typography variant="h6" sx={{ mb: 2 }}>
             Escolher empresa
           </Typography>
+          <TextField
+            size="small"
+            placeholder="Buscar empresa"
+            value={companiesQuery}
+            onChange={(e) => setCompaniesQuery(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
           <List>
-            <ListItem disablePadding>
-              <Button
-                fullWidth
-                variant="outlined"
-                onClick={() => { setSelectedCompany('Empresa Teste'); setCompanyDrawerOpen(false); }}
-              >
-                Empresa Teste
-              </Button>
-            </ListItem>
+            {companiesLoading && (
+              <ListItem>
+                <ListItemText primary="Carregando empresas..." />
+              </ListItem>
+            )}
+            {companiesError && (
+              <ListItem sx={{ display: 'block' }}>
+                <ListItemText primary={companiesError} secondary={`Base URL: ${import.meta.env.VITE_API_BASE_URL || 'não definida'}`} />
+                <Button size="small" onClick={loadCompanies}>Tentar novamente</Button>
+              </ListItem>
+            )}
+            {companies.length === 0 && (
+              <ListItem>
+                <ListItemText primary="Nenhuma empresa disponível no momento." />
+              </ListItem>
+            )}
+            {companies
+              .filter((c) =>
+                companiesQuery
+                  ? c.name.toLowerCase().includes(companiesQuery.toLowerCase()) ||
+                    (c.cidade || '').toLowerCase().includes(companiesQuery.toLowerCase())
+                  : true
+              )
+              .map((c) => (
+              <ListItem key={c.id} disablePadding>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() => { setSelectedCompany(c.name); setCompanyDrawerOpen(false); }}
+                >
+                  {c.name}
+                </Button>
+              </ListItem>
+            ))}
           </List>
           <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ mt: 2 }}>
             <Button onClick={() => setCompanyDrawerOpen(false)}>Fechar</Button>
