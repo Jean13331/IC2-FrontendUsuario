@@ -4,6 +4,7 @@ import { Route, Routes, useLocation, Navigate } from 'react-router-dom';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Pdls from './pages/Pdls';
 
 export default function App() {
   const theme = useTheme();
@@ -17,6 +18,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/pdls" element={<Pdls />} />
           <Route path="/home" element={<Home />} />
         </Routes>
       </Container>

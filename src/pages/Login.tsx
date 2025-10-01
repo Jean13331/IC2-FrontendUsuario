@@ -29,13 +29,38 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [companyDrawerOpen, setCompanyDrawerOpen] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companiesLoading, setCompaniesLoading] = useState(false);
   const [companiesError, setCompaniesError] = useState<string | null>(null);
   const [companiesQuery, setCompaniesQuery] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const REMEMBER_KEY = 'ic2.remember.v1';
+
+  const encode = (text: string) => {
+    try { return btoa(unescape(encodeURIComponent(text))); } catch { return ''; }
+  };
+  const decode = (text: string) => {
+    try { return decodeURIComponent(escape(atob(text))); } catch { return ''; }
+  };
+  const saveRemember = (userEmail: string, company: Company | null, days = 30) => {
+    try {
+      const expiresAt = Date.now() + days * 24 * 60 * 60 * 1000;
+      const payload = {
+        emailEnc: encode(userEmail),
+        company: company ? { id: company.id, name: company.name } : null,
+        expiresAt,
+      };
+      localStorage.setItem(REMEMBER_KEY, JSON.stringify(payload));
+    } catch {}
+  };
+  const clearRemember = () => {
+    try { localStorage.removeItem(REMEMBER_KEY); } catch {}
+  };
 
   // Bloqueia scroll enquanto a tela de login está ativa
   useEffect(() => {
@@ -63,20 +88,51 @@ export default function Login() {
     loadCompanies();
   }, []);
 
+  // Carrega dados salvos (lembrar de mim)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(REMEMBER_KEY);
+      if (!raw) return;
+      const payload = JSON.parse(raw);
+      if (payload?.expiresAt && Date.now() < Number(payload.expiresAt)) {
+        setRememberMe(true);
+        setEmail(decode(payload.emailEnc || ''));
+        if (payload.company) setSelectedCompany(payload.company as Company);
+      } else {
+        clearRemember();
+      }
+    } catch {}
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
-    const email = String(data.get('email') || '');
-    const password = String(data.get('password') || '');
+    const formEmail = String(data.get('email') || email);
+    const formPassword = String(data.get('password') || password);
     setError(null);
-    if (!email || !password) {
+    if (!selectedCompany) {
+      setError('Selecione uma empresa.');
+      return;
+    }
+    if (!formEmail || !formPassword) {
       setError('Preencha e-mail e senha.');
       return;
     }
     try {
       setLoading(true);
-      await loginApi(email, password, selectedCompany || undefined);
-      navigate('/home');
+      const result = await loginApi(formEmail, formPassword, selectedCompany?.id);
+      try {
+        localStorage.setItem('ic2.session', JSON.stringify({
+          email: formEmail,
+          companyId: selectedCompany?.id,
+          companyName: selectedCompany?.name,
+          loggedAt: new Date().toISOString(),
+        }));
+      } catch {}
+      // Persistência com expiração e email ofuscado
+      if (rememberMe) saveRemember(formEmail, selectedCompany, 30);
+      else clearRemember();
+      navigate('/pdls');
     } catch (err: any) {
       setError(err?.response?.data?.message || 'Falha no login. Verifique suas credenciais.');
     } finally {
@@ -136,9 +192,9 @@ export default function Login() {
           <Box component="form" onSubmit={handleSubmit} noValidate>
             <Stack spacing={2}>
               <Button variant="outlined" onClick={() => setCompanyDrawerOpen(true)}>
-                {selectedCompany ? `Empresa: ${selectedCompany}` : 'Selecionar empresa'}
+                {selectedCompany ? `Empresa: ${selectedCompany.name}` : 'Selecionar empresa'}
               </Button>
-              <TextField name="email" label="E-mail" type="email" autoComplete="email" fullWidth required />
+              <TextField name="email" label="E-mail" type="email" autoComplete="email" fullWidth required value={email} onChange={(e) => setEmail(e.target.value)} />
               <TextField
                 name="password"
                 label="Senha"
@@ -146,6 +202,8 @@ export default function Login() {
                 autoComplete="current-password"
                 fullWidth
                 required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -160,7 +218,7 @@ export default function Login() {
                   ),
                 }}
               />
-              <FormControlLabel control={<Checkbox name="remember" color="primary" />} label="Lembrar de mim" />
+              <FormControlLabel control={<Checkbox name="remember" color="primary" checked={rememberMe} onChange={(e) => { const v = e.target.checked; setRememberMe(v); if (!v) clearRemember(); }} />} label="Lembrar de mim" />
               <Button type="submit" variant="contained" size="large" disabled={loading}>
                 Entrar
               </Button>
@@ -223,7 +281,7 @@ export default function Login() {
                 <Button
                   fullWidth
                   variant="outlined"
-                  onClick={() => { setSelectedCompany(c.name); setCompanyDrawerOpen(false); }}
+                  onClick={() => { setSelectedCompany(c); setCompanyDrawerOpen(false); }}
                 >
                   {c.name}
                 </Button>
