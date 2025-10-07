@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Box, Button, Container, Paper, Stack, TextField, Typography, IconButton, InputAdornment, Drawer, List, ListItem, ListItemText, FormControl, InputLabel, Select, MenuItem, Autocomplete, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { login as loginApi } from '../services/auth';
+import { register as registerApi } from '../services/auth';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { listCompanies, Company } from '../services/companies';
@@ -10,7 +10,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [companyDrawerOpen, setCompanyDrawerOpen] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState<string | null>(null);
+  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
   const [states, setStates] = useState<Array<{ id: number; sigla: string; nome: string }>>([]);
   const [cities, setCities] = useState<Array<{ id: number; nome: string }>>([]);
   const [selectedUf, setSelectedUf] = useState<string>('');
@@ -71,20 +71,24 @@ export default function Register() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100vh',
+        minHeight: '100vh',
+        minHeight: '100dvh', // Dynamic viewport height para mobile
+        height: 'auto',
         background: 'linear-gradient(180deg, #f9fbfd 0%, #f1f5f9 100%)',
         flexDirection: 'column',
-        gap: 3,
+        gap: { xs: 2, sm: 3 },
+        py: { xs: 2, sm: 4 }, // Padding vertical para espaçamento
+        px: { xs: 1, sm: 2 }, // Padding horizontal para evitar overflow
       }}
     >
-      <Box sx={{ textAlign: 'center', mt: { xs: 2, sm: 4 } }}>
+      <Box sx={{ textAlign: 'center', mt: { xs: 1, sm: 2 } }}>
         <Typography
           component="div"
           color="primary"
           sx={{
             fontWeight: 900,
             lineHeight: 1,
-            fontSize: { xs: 56, sm: 72, md: 96 },
+            fontSize: { xs: 'clamp(40px, 10vw, 56px)', sm: 'clamp(48px, 12vw, 72px)', md: 'clamp(64px, 15vw, 96px)' },
             textShadow: '0 3px 10px rgba(14,42,74,0.35)'
           }}
         >
@@ -94,18 +98,33 @@ export default function Register() {
           component="div"
           color="secondary"
           sx={{
-            letterSpacing: { xs: 8, sm: 10 },
+            letterSpacing: { xs: 'clamp(4px, 2vw, 8px)', sm: 'clamp(6px, 2.5vw, 10px)' },
             mt: 1,
             fontWeight: 800,
-            fontSize: { xs: 22, sm: 28 },
+            fontSize: { xs: 'clamp(14px, 3.5vw, 22px)', sm: 'clamp(18px, 4.5vw, 28px)' },
             textShadow: '0 2px 8px rgba(37,162,162,0.35)'
           }}
         >
           EVOLUTIVA
         </Typography>
       </Box>
-      <Paper elevation={6} sx={{ p: { xs: 2.5, sm: 4 }, borderRadius: 3, width: '100%' }}>
-        <Typography variant="h5" component="h1" color="primary" sx={{ mb: 2, textAlign: 'center' }}>
+      <Paper elevation={6} sx={{ 
+        p: { xs: 2, sm: 3, md: 4 }, 
+        borderRadius: 3, 
+        width: '100%',
+        maxWidth: '100%',
+        overflow: 'hidden'
+      }}>
+        <Typography 
+          variant="h5" 
+          component="h1" 
+          color="primary" 
+          sx={{ 
+            mb: 2, 
+            textAlign: 'center',
+            fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }
+          }}
+        >
           Criar conta
         </Typography>
         <Box component="form" onSubmit={async (e) => {
@@ -113,32 +132,133 @@ export default function Register() {
           setError(null);
           try {
             setLoading(true);
-            // Aqui normalmente faria registro; como placeholder, vamos logar direto se já tiver email/senha
-            const form = new FormData(e.currentTarget as HTMLFormElement);
-            const email = String(form.get('email') || '');
-            const password = String(form.get('password') || '');
-            if (!email || !password) {
-              setError('Preencha e-mail e senha.');
+            
+            if (!selectedCompany || !selectedCompany.id) {
+              setError('Selecione uma empresa válida.');
               setLoading(false);
               return;
             }
-            await loginApi(email, password, selectedCompany || undefined);
-            navigate('/home');
+            
+            const form = new FormData(e.currentTarget as HTMLFormElement);
+            const nome = String(form.get('name') || '');
+            const email = String(form.get('email') || '');
+            const senha = String(form.get('password') || '');
+            const confirmSenha = String(form.get('confirm') || '');
+            const telefone = phone || '';
+            
+            // Validação mais flexível - apenas campos essenciais
+            if (!nome || !email || !senha) {
+              const missingFields = [];
+              if (!nome) missingFields.push('Nome');
+              if (!email) missingFields.push('E-mail');
+              if (!senha) missingFields.push('Senha');
+              
+              setError(`Preencha os campos obrigatórios: ${missingFields.join(', ')}`);
+              setLoading(false);
+              return;
+            }
+            
+            // Aviso se campos opcionais não estão preenchidos
+            if (!telefone || !selectedUf || !selectedCity) {
+              console.warn('⚠️ Campos opcionais não preenchidos:', {
+                telefone: !telefone ? 'vazio' : 'ok',
+                selectedUf: !selectedUf ? 'vazio' : 'ok',
+                selectedCity: !selectedCity ? 'vazio' : 'ok'
+              });
+            }
+            
+            if (senha !== confirmSenha) {
+              setError('As senhas não coincidem.');
+              setLoading(false);
+              return;
+            }
+            
+            const registerData = {
+              nome,
+              email,
+              senha,
+              telefone,
+              cidade: selectedCity || '',
+              estado: selectedUf || '',
+              empresa_id: selectedCompany.id
+            };
+            
+            console.log('📤 Dados de registro sendo enviados:', registerData);
+            console.log('🏢 Empresa selecionada:', selectedCompany);
+            console.log('📋 Validação de campos:');
+            console.log('- Nome:', nome);
+            console.log('- Email:', email);
+            console.log('- Senha:', senha ? '***' : 'VAZIO');
+            console.log('- Telefone:', telefone);
+            console.log('- Cidade:', selectedCity);
+            console.log('- Estado:', selectedUf);
+            console.log('- Empresa ID:', selectedCompany?.id);
+            
+            const result = await registerApi(registerData);
+            
+            setError(null);
+            
+            // Verificar se foi reativação ou novo registro
+            const isReactivation = result.message?.includes('reativado');
+            const redirectParam = isReactivation ? 'reactivated=true' : 'registered=true';
+            
+            // Redirecionar para login após registro/reativação bem-sucedido
+            navigate(`/login?${redirectParam}`);
           } catch (err: any) {
-            setError(err?.response?.data?.message || 'Erro ao registrar/logar.');
+            console.error('❌ Erro no registro:', err);
+            console.error('❌ Erro response:', err?.response);
+            console.error('❌ Erro data:', err?.response?.data);
+            console.error('❌ Erro status:', err?.response?.status);
+            console.error('❌ Erro config:', err?.config);
+            
+            const errorMessage = err?.response?.data?.error || err?.response?.data?.message || 'Erro ao registrar usuário.';
+            setError(errorMessage);
           } finally {
             setLoading(false);
           }
         }}>
-          <Stack spacing={2}>
+          <Stack spacing={{ xs: 1.5, sm: 2 }}>
             {error && (
               <Alert severity="error">{error}</Alert>
             )}
-            <Button variant="outlined" onClick={() => setCompanyDrawerOpen(true)}>
-              {selectedCompany ? `Empresa: ${selectedCompany}` : 'Selecionar empresa'}
+            <Button 
+              variant="outlined" 
+              onClick={() => setCompanyDrawerOpen(true)}
+              sx={{ 
+                minHeight: { xs: '48px', sm: '56px' },
+                fontSize: { xs: '0.875rem', sm: '1rem' },
+                textAlign: 'left',
+                justifyContent: 'flex-start',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              {selectedCompany ? `Empresa: ${selectedCompany.name}` : 'Selecionar empresa'}
             </Button>
-            <TextField name="name" label="Nome completo" fullWidth required />
-            <TextField name="email" label="E-mail" type="email" fullWidth required />
+            <TextField 
+              name="name" 
+              label="Nome completo" 
+              fullWidth 
+              required
+              sx={{ 
+                '& .MuiInputBase-input': { 
+                  fontSize: { xs: '16px', sm: '16px' } // Previne zoom no iOS
+                }
+              }}
+            />
+            <TextField 
+              name="email" 
+              label="E-mail" 
+              type="email" 
+              fullWidth 
+              required
+              sx={{ 
+                '& .MuiInputBase-input': { 
+                  fontSize: { xs: '16px', sm: '16px' } // Previne zoom no iOS
+                }
+              }}
+            />
             <TextField
               name="phone"
               label="Telefone"
@@ -147,6 +267,11 @@ export default function Register() {
               inputMode="numeric"
               fullWidth
               required
+              sx={{ 
+                '& .MuiInputBase-input': { 
+                  fontSize: { xs: '16px', sm: '16px' } // Previne zoom no iOS
+                }
+              }}
             />
             <FormControl fullWidth required>
               <InputLabel id="uf-label">Estado</InputLabel>
@@ -184,6 +309,11 @@ export default function Register() {
               type={showPassword ? 'text' : 'password'}
               fullWidth
               required
+              sx={{ 
+                '& .MuiInputBase-input': { 
+                  fontSize: { xs: '16px', sm: '16px' } // Previne zoom no iOS
+                }
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -191,6 +321,7 @@ export default function Register() {
                       aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                       onClick={() => setShowPassword((v) => !v)}
                       edge="end"
+                      size="small"
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -204,6 +335,11 @@ export default function Register() {
               type={showConfirm ? 'text' : 'password'}
               fullWidth
               required
+              sx={{ 
+                '& .MuiInputBase-input': { 
+                  fontSize: { xs: '16px', sm: '16px' } // Previne zoom no iOS
+                }
+              }}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
@@ -211,6 +347,7 @@ export default function Register() {
                       aria-label={showConfirm ? 'Ocultar senha' : 'Mostrar senha'}
                       onClick={() => setShowConfirm((v) => !v)}
                       edge="end"
+                      size="small"
                     >
                       {showConfirm ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -218,10 +355,26 @@ export default function Register() {
                 ),
               }}
             />
-            <Button type="submit" variant="contained" size="large" disabled={loading}>
+            <Button 
+              type="submit" 
+              variant="contained" 
+              size="large" 
+              disabled={loading}
+              sx={{ 
+                minHeight: { xs: '48px', sm: '56px' },
+                fontSize: { xs: '1rem', sm: '1.125rem' }
+              }}
+            >
               Registrar
             </Button>
-            <Button href="/login" variant="text">
+            <Button 
+              href="/login" 
+              variant="text"
+              sx={{ 
+                minHeight: { xs: '48px', sm: '56px' },
+                fontSize: { xs: '1rem', sm: '1.125rem' }
+              }}
+            >
               Voltar ao login
             </Button>
           </Stack>
@@ -264,7 +417,7 @@ export default function Register() {
                   <Button
                     fullWidth
                     variant="outlined"
-                    onClick={() => { setSelectedCompany(c.name); setCompanyDrawerOpen(false); }}
+                    onClick={() => { setSelectedCompany(c); setCompanyDrawerOpen(false); }}
                   >
                     {c.name}
                   </Button>

@@ -39,6 +39,8 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [reactivationSuccess, setReactivationSuccess] = useState(false);
   const REMEMBER_KEY = 'ic2.remember.v1';
 
   const encode = (text: string) => {
@@ -104,6 +106,20 @@ export default function Login() {
     } catch {}
   }, []);
 
+  // Verifica se veio do registro ou reativação
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('registered') === 'true') {
+      setRegistrationSuccess(true);
+      // Remove o parâmetro da URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (urlParams.get('reactivated') === 'true') {
+      setReactivationSuccess(true);
+      // Remove o parâmetro da URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = new FormData(e.currentTarget);
@@ -121,14 +137,43 @@ export default function Login() {
     try {
       setLoading(true);
       const result = await loginApi(formEmail, formPassword, selectedCompany?.id);
+      console.log('Resultado do login:', result);
+      
+      // Salvar token de autenticação
+      if (result.token) {
+        localStorage.setItem('ic2.token', result.token);
+        console.log('Token salvo:', result.token.substring(0, 50) + '...');
+      } else if (result.data?.token) {
+        localStorage.setItem('ic2.token', result.data.token);
+        console.log('Token (data) salvo:', result.data.token.substring(0, 50) + '...');
+      } else {
+        console.error('Nenhum token encontrado na resposta:', result);
+        alert('Erro: Token não recebido do servidor');
+        return;
+      }
+      
+      // Salvar informações da sessão
       try {
+        console.log('🔍 Resposta completa do login:', result);
+        console.log('🔍 Dados do usuário:', result.data?.user);
+        console.log('🔍 ID do usuário:', result.data?.user?.id);
+        console.log('🔍 ID do usuário (alternativo):', result.data?.user?.id_usuario);
+        
+        const userId = result.data?.user?.id || result.data?.user?.id_usuario;
+        console.log('🔍 UserId final para salvar:', userId);
+        
         localStorage.setItem('ic2.session', JSON.stringify({
           email: formEmail,
+          userId: userId,
           companyId: selectedCompany?.id,
           companyName: selectedCompany?.name,
           loggedAt: new Date().toISOString(),
         }));
-      } catch {}
+        console.log('✅ Sessão salva com userId:', userId);
+      } catch (error) {
+        console.error('❌ Erro ao salvar sessão:', error);
+      }
+      
       // Persistência com expiração e email ofuscado
       if (rememberMe) saveRemember(formEmail, selectedCompany, 30);
       else clearRemember();
@@ -147,19 +192,23 @@ export default function Login() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100vh',
+        minHeight: '100vh',
+        minHeight: '100dvh', // Dynamic viewport height para mobile
+        height: 'auto',
         background: 'linear-gradient(180deg, #f9fbfd 0%, #f1f5f9 100%)',
+        py: { xs: 2, sm: 4 }, // Padding vertical para espaçamento
+        px: { xs: 1, sm: 2 }, // Padding horizontal para evitar overflow
       }}
     >
       <Stack spacing={3} sx={{ width: '100%' }}>
-        <Box sx={{ textAlign: 'center', mt: { xs: 2, sm: 4 } }}>
+        <Box sx={{ textAlign: 'center', mt: { xs: 1, sm: 2 } }}>
           <Typography
             component="div"
             color="primary"
             sx={{
               fontWeight: 900,
               lineHeight: 1,
-              fontSize: { xs: 72, sm: 96, md: 128 },
+              fontSize: { xs: 'clamp(48px, 12vw, 72px)', sm: 'clamp(64px, 15vw, 96px)', md: 'clamp(80px, 18vw, 128px)' },
               textShadow: '0 3px 10px rgba(14,42,74,0.35)'
             }}
           >
@@ -169,32 +218,84 @@ export default function Login() {
             component="div"
             color="secondary"
             sx={{
-              letterSpacing: { xs: 8, sm: 10, md: 12 },
+              letterSpacing: { xs: 'clamp(4px, 2vw, 8px)', sm: 'clamp(6px, 2.5vw, 10px)', md: 'clamp(8px, 3vw, 12px)' },
               mt: 1,
               fontWeight: 800,
-              fontSize: { xs: 24, sm: 32, md: 40 },
+              fontSize: { xs: 'clamp(16px, 4vw, 24px)', sm: 'clamp(20px, 5vw, 32px)', md: 'clamp(24px, 6vw, 40px)' },
               textShadow: '0 2px 8px rgba(37,162,162,0.35)'
             }}
           >
             EVOLUTIVA
           </Typography>
-          <Divider sx={{ mt: 1.5, mx: 'auto', width: { xs: 100, sm: 120 }, borderColor: 'secondary.main', opacity: 0.6 }} />
+          <Divider sx={{ mt: 1.5, mx: 'auto', width: { xs: 'clamp(80px, 20vw, 100px)', sm: 'clamp(100px, 25vw, 120px)' }, borderColor: 'secondary.main', opacity: 0.6 }} />
         </Box>
-        <Paper elevation={6} sx={{ p: { xs: 2.5, sm: 4 }, borderRadius: 3, boxShadow: (theme) => theme.shadows[8] }}>
-          <Typography variant="h5" component="h1" color="primary" sx={{ mb: 2, textAlign: 'center' }}>
+        <Paper elevation={6} sx={{ 
+          p: { xs: 2, sm: 3, md: 4 }, 
+          borderRadius: 3, 
+          boxShadow: (theme) => theme.shadows[8],
+          width: '100%',
+          maxWidth: '100%',
+          overflow: 'hidden'
+        }}>
+          <Typography 
+            variant="h5" 
+            component="h1" 
+            color="primary" 
+            sx={{ 
+              mb: 2, 
+              textAlign: 'center',
+              fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' }
+            }}
+          >
             Entrar
           </Typography>
+          {registrationSuccess && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Conta criada com sucesso! Agora você pode fazer login.
+            </Alert>
+          )}
+          {reactivationSuccess && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              Conta reativada com sucesso! Sua senha foi atualizada. Agora você pode fazer login.
+            </Alert>
+          )}
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
           <Box component="form" onSubmit={handleSubmit} noValidate>
-            <Stack spacing={2}>
-              <Button variant="outlined" onClick={() => setCompanyDrawerOpen(true)}>
+            <Stack spacing={{ xs: 1.5, sm: 2 }}>
+              <Button 
+                variant="outlined" 
+                onClick={() => setCompanyDrawerOpen(true)}
+                sx={{ 
+                  minHeight: { xs: '48px', sm: '56px' },
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                  textAlign: 'left',
+                  justifyContent: 'flex-start',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
+              >
                 {selectedCompany ? `Empresa: ${selectedCompany.name}` : 'Selecionar empresa'}
               </Button>
-              <TextField name="email" label="E-mail" type="email" autoComplete="email" fullWidth required value={email} onChange={(e) => setEmail(e.target.value)} />
+              <TextField 
+                name="email" 
+                label="E-mail" 
+                type="email" 
+                autoComplete="email" 
+                fullWidth 
+                required 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)}
+                sx={{ 
+                  '& .MuiInputBase-input': { 
+                    fontSize: { xs: '16px', sm: '16px' } // Previne zoom no iOS
+                  }
+                }}
+              />
               <TextField
                 name="password"
                 label="Senha"
@@ -204,6 +305,11 @@ export default function Login() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                sx={{ 
+                  '& .MuiInputBase-input': { 
+                    fontSize: { xs: '16px', sm: '16px' } // Previne zoom no iOS
+                  }
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -211,6 +317,7 @@ export default function Login() {
                         aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                         onClick={() => setShowPassword((v) => !v)}
                         edge="end"
+                        size="small"
                       >
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
@@ -218,15 +325,44 @@ export default function Login() {
                   ),
                 }}
               />
-              <FormControlLabel control={<Checkbox name="remember" color="primary" checked={rememberMe} onChange={(e) => { const v = e.target.checked; setRememberMe(v); if (!v) clearRemember(); }} />} label="Lembrar de mim" />
-              <Button type="submit" variant="contained" size="large" disabled={loading}>
+              <FormControlLabel 
+                control={
+                  <Checkbox 
+                    name="remember" 
+                    color="primary" 
+                    checked={rememberMe} 
+                    onChange={(e) => { const v = e.target.checked; setRememberMe(v); if (!v) clearRemember(); }} 
+                    size="small"
+                  />
+                } 
+                label="Lembrar de mim" 
+                sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+              />
+              <Button 
+                type="submit" 
+                variant="contained" 
+                size="large" 
+                disabled={loading}
+                sx={{ 
+                  minHeight: { xs: '48px', sm: '56px' },
+                  fontSize: { xs: '1rem', sm: '1.125rem' }
+                }}
+              >
                 Entrar
               </Button>
-              <Button href="/register" variant="outlined" size="large">
+              <Button 
+                href="/register" 
+                variant="outlined" 
+                size="large"
+                sx={{ 
+                  minHeight: { xs: '48px', sm: '56px' },
+                  fontSize: { xs: '1rem', sm: '1.125rem' }
+                }}
+              >
                 Registrar
               </Button>
               <Box sx={{ textAlign: 'center' }}>
-                <Link href="#" variant="body2">
+                <Link href="#" variant="body2" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
                   Esqueci minha senha
                 </Link>
               </Box>

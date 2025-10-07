@@ -5,6 +5,9 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Pdls from './pages/Pdls';
+import PdlDetail from './pages/PdlDetail';
+import AprendizadosCompromissos from './pages/AprendizadosCompromissos';
+import AcoesRealizadas from './pages/AcoesRealizadas';
 
 export default function App() {
   const theme = useTheme();
@@ -20,6 +23,9 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/pdls" element={<Pdls />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/empresa/:companySlug/pdl/:pdlSlug" element={<PdlDetail />} />
+          <Route path="/aprendizados-compromissos" element={<AprendizadosCompromissos />} />
+          <Route path="/acoes-realizadas" element={<AcoesRealizadas />} />
         </Routes>
       </Container>
     </Box>

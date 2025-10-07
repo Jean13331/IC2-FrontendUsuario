@@ -36,6 +36,32 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         'label.Mui-focused': {
           color: '#0E2A4A',
         },
+        // Estilos para melhorar comportamento com zoom
+        'html, body': {
+          overflowX: 'hidden',
+          minHeight: '100vh',
+          minHeight: '100dvh', // Dynamic viewport height para mobile
+        },
+        '#root': {
+          minHeight: '100vh',
+          minHeight: '100dvh',
+          display: 'flex',
+          flexDirection: 'column',
+        },
+        // Previne quebra de layout com zoom
+        '.MuiContainer-root': {
+          position: 'relative',
+        },
+        // Melhora responsividade dos formulários
+        '.MuiTextField-root': {
+          minWidth: 0, // Previne overflow
+        },
+        // Ajusta tamanhos de fonte para zoom
+        '@media (max-width: 600px)': {
+          '.MuiTypography-h4, .MuiTypography-h5': {
+            fontSize: '1.5rem !important',
+          },
+        },
       }} />
       <BrowserRouter>
         <App />

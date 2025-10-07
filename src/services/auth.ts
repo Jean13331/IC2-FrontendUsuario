@@ -11,5 +11,18 @@ export async function verify() {
   return data;
 }
 
+export async function register(userData: {
+  nome: string;
+  email: string;
+  senha: string;
+  telefone: string;
+  cidade: string;
+  estado: string;
+  empresa_id: number;
+}) {
+  const { data } = await api.post('/api/auth/register', userData);
+  return data;
+}
+
 
 
