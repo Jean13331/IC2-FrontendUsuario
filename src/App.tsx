@@ -8,6 +8,8 @@ import Pdls from './pages/Pdls';
 import PdlDetail from './pages/PdlDetail';
 import AprendizadosCompromissos from './pages/AprendizadosCompromissos';
 import AcoesRealizadas from './pages/AcoesRealizadas';
+import AcoesResultados from './pages/AcoesResultados';
+import Relatorio from './pages/Relatorio';
 
 export default function App() {
   const theme = useTheme();
@@ -26,6 +28,8 @@ export default function App() {
           <Route path="/empresa/:companySlug/pdl/:pdlSlug" element={<PdlDetail />} />
           <Route path="/aprendizados-compromissos" element={<AprendizadosCompromissos />} />
           <Route path="/acoes-realizadas" element={<AcoesRealizadas />} />
+          <Route path="/acoes-resultados" element={<AcoesResultados />} />
+          <Route path="/relatorio" element={<Relatorio />} />
         </Routes>
       </Container>
     </Box>

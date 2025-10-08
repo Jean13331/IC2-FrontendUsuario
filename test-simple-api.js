@@ -47,3 +47,4 @@ if (!session.userId) {
   
   testAPI();
 }
+

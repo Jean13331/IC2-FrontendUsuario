@@ -102,6 +102,8 @@ export default function PdlDetail() {
       navigate('/aprendizados-compromissos');
     } else if (functionality === 'Ações Realizadas') {
       navigate('/acoes-realizadas');
+    } else if (functionality === 'Relatório') {
+      navigate('/relatorio');
     } else {
       // Aqui você pode implementar a navegação para outras funcionalidades
       console.log(`Clicou em: ${functionality}`);

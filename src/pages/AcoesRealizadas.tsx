@@ -178,6 +178,56 @@ export default function AcoesRealizadas() {
     navigate(-1);
   };
 
+  const handlePdlClick = (avaliacao: PdlAvaliacaoCompleta) => {
+    // Salvar informações da avaliação selecionada no localStorage
+    const avaliacaoInfo = {
+      id: avaliacao.id_avaliacao,
+      pdlId: avaliacao.pdl_id,
+      pdlName: avaliacao.pdl_nome || 'PDL não informado',
+      temaDia: avaliacao.tema_dia || 'Tema não informado',
+      dataTreinamento: avaliacao.data_treinamento,
+      principaisAprendizados: avaliacao.principais_aprendizados,
+      compromissos: avaliacao.compromissos,
+      companyName: pdlInfo?.companyName || 'Empresa não informada',
+      selectedAt: new Date().toISOString(),
+      isEdit: false // Indica que é um novo preenchimento
+    };
+    
+    localStorage.setItem('ic2.selectedAvaliacao', JSON.stringify(avaliacaoInfo));
+    
+    // Navegar para a página de preenchimento de ações e resultados
+    navigate('/acoes-resultados');
+  };
+
+  const handleEditClick = (avaliacao: PdlAvaliacaoCompleta) => {
+    // Salvar informações da avaliação selecionada no localStorage com dados existentes
+    const avaliacaoInfo = {
+      id: avaliacao.id_avaliacao,
+      pdlId: avaliacao.pdl_id,
+      pdlName: avaliacao.pdl_nome || 'PDL não informado',
+      temaDia: avaliacao.tema_dia || 'Tema não informado',
+      dataTreinamento: avaliacao.data_treinamento,
+      principaisAprendizados: avaliacao.principais_aprendizados,
+      compromissos: avaliacao.compromissos,
+      companyName: pdlInfo?.companyName || 'Empresa não informada',
+      selectedAt: new Date().toISOString(),
+      isEdit: true, // Indica que é uma edição
+      // Dados existentes para preencher o formulário
+      existingData: {
+        feedback_acoes_realizadas: avaliacao.feedback_acoes_realizadas || '',
+        acoes_nao_realizadas: avaliacao.acoes_nao_realizadas || '',
+        justificativa_nao_realizadas: avaliacao.justificativa_nao_realizadas || '',
+        impacto_atividade_realizada: avaliacao.impacto_atividade_realizada || '',
+        observacoes_aprendizados: avaliacao.observacoes_aprendizados || ''
+      }
+    };
+    
+    localStorage.setItem('ic2.selectedAvaliacao', JSON.stringify(avaliacaoInfo));
+    
+    // Navegar para a página de edição de ações e resultados
+    navigate('/acoes-resultados');
+  };
+
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'Data não informada';
     try {
@@ -259,19 +309,65 @@ export default function AcoesRealizadas() {
           </Typography>
 
 
+          {/* Resumo das Avaliações */}
+          <Card variant="outlined" sx={{ bgcolor: 'grey.50' }}>
+            <CardContent>
+              <Typography variant="h6" color="text.primary" sx={{ mb: 2, fontWeight: 'bold' }}>
+                📊 Resumo das Avaliações
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={4}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'primary.light', color: 'primary.contrastText' }}>
+                    <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                      {avaliacoes.length}
+                    </Typography>
+                    <Typography variant="body2">
+                      Total de Avaliações
+                    </Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'warning.light', color: 'warning.contrastText' }}>
+                    <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                      {avaliacoes.filter(a => getStatusAvaliacao(a) === 'pendente').length}
+                    </Typography>
+                    <Typography variant="body2">
+                      Pendentes
+                    </Typography>
+                  </Paper>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <Paper sx={{ p: 2, textAlign: 'center', bgcolor: 'success.light', color: 'success.contrastText' }}>
+                    <Typography variant="h4" sx={{ fontWeight: 'bold' }}>
+                      {avaliacoes.filter(a => getStatusAvaliacao(a) === 'concluida').length}
+                    </Typography>
+                    <Typography variant="body2">
+                      Concluídas
+                    </Typography>
+                  </Paper>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+
           {/* Lista de Avaliações PDL */}
           <Card variant="outlined">
             <CardContent>
-              <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
-                Ações e Resultados
+              <Typography variant="h6" color="text.primary" sx={{ mb: 3, fontWeight: 'bold' }}>
+                📋 Ações e Resultados
               </Typography>
               
               {avaliacoes.length === 0 ? (
-                <Alert severity="info">
-                  Nenhuma ação realizada encontrada. Faça sua primeira avaliação na seção "Aprendizados e Compromissos" e depois preencha os resultados aqui.
+                <Alert severity="info" sx={{ borderRadius: 2 }}>
+                  <Typography variant="body1">
+                    <strong>Nenhuma avaliação encontrada.</strong>
+                  </Typography>
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    Faça sua primeira avaliação na seção "Aprendizados e Compromissos" e depois preencha os resultados aqui.
+                  </Typography>
                 </Alert>
               ) : (
-                <Stack spacing={2}>
+                <Stack spacing={3}>
                   {avaliacoes.map((avaliacao) => {
                     const status = getStatusAvaliacao(avaliacao);
                     return (
@@ -280,10 +376,12 @@ export default function AcoesRealizadas() {
                         variant="outlined"
                         sx={{ 
                           '&:hover': { 
-                            boxShadow: 2,
-                            borderColor: 'primary.main'
+                            boxShadow: 3,
+                            borderColor: 'primary.main',
+                            transform: 'translateY(-2px)'
                           },
-                          transition: 'all 0.2s ease-in-out'
+                          transition: 'all 0.3s ease-in-out',
+                          borderRadius: 2
                         }}
                       >
                         <CardContent>
@@ -293,27 +391,65 @@ export default function AcoesRealizadas() {
                               direction={{ xs: 'column', sm: 'row' }} 
                               justifyContent="space-between" 
                               alignItems={{ xs: 'flex-start', sm: 'center' }}
-                              spacing={1}
+                              spacing={2}
                             >
-                              <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
-                                {avaliacao.tema_dia || 'Tema não informado'}
-                              </Typography>
+                              <Box>
+                                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+                                  📚 {avaliacao.tema_dia || 'Tema não informado'}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                                  {formatDate(avaliacao.data_treinamento)}
+                                </Typography>
+                              </Box>
                               
-                              <Chip
-                                icon={getStatusIcon(status)}
-                                label={getStatusLabel(status)}
-                                color={getStatusColor(status)}
-                                size="small"
-                              />
+                              <Stack direction="row" spacing={1} alignItems="center">
+                                <Chip
+                                  icon={getStatusIcon(status)}
+                                  label={getStatusLabel(status)}
+                                  color={getStatusColor(status)}
+                                  size="small"
+                                  sx={{ fontWeight: 'bold' }}
+                                />
+                                {status === 'pendente' ? (
+                                  <Button
+                                    variant="contained"
+                                    size="small"
+                                    endIcon={<ArrowForward />}
+                                    onClick={() => handlePdlClick(avaliacao)}
+                                    sx={{
+                                      textTransform: 'none',
+                                      fontWeight: 'bold'
+                                    }}
+                                  >
+                                    Preencher
+                                  </Button>
+                                ) : (
+                                  <Button
+                                    variant="outlined"
+                                    size="small"
+                                    endIcon={<ArrowForward />}
+                                    onClick={() => handleEditClick(avaliacao)}
+                                    sx={{
+                                      textTransform: 'none',
+                                      fontWeight: 'bold',
+                                      color: 'primary.main',
+                                      borderColor: 'primary.main',
+                                      '&:hover': {
+                                        backgroundColor: 'primary.light',
+                                        borderColor: 'primary.dark'
+                                      }
+                                    }}
+                                  >
+                                    Editar
+                                  </Button>
+                                )}
+                              </Stack>
                             </Stack>
 
-                            {/* Informações da avaliação */}
-                            <Stack direction="row" spacing={3} sx={{ color: 'text.secondary' }}>
-                              <Typography variant="body2">
-                                <strong>Data:</strong> {formatDate(avaliacao.data_treinamento)}
-                              </Typography>
-                              <Typography variant="body2">
-                                <strong>PDL:</strong> {avaliacao.pdl_nome || 'PDL não informado'}
+                            {/* Informações do PDL */}
+                            <Stack direction="row" spacing={2} alignItems="center">
+                              <Typography variant="body2" color="text.secondary">
+                                <strong>🏢 PDL:</strong> {avaliacao.pdl_nome || 'PDL não informado'}
                               </Typography>
                             </Stack>
 
