@@ -11,19 +11,16 @@ import AcoesRealizadas from './pages/AcoesRealizadas';
 import AcoesResultados from './pages/AcoesResultados';
 import Relatorio from './pages/Relatorio';
 import Test from './pages/Test';
+import LoginSimple from './pages/LoginSimple';
 
 function AppContent() {
-  const theme = useTheme();
-  const isDesktop = useMediaQuery(theme.breakpoints.up('sm'));
-  const location = useLocation();
-  const isLogin = location.pathname === '/' || location.pathname.startsWith('/login');
-  
   return (
     <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
-      <Container component="main" sx={{ py: isLogin ? 0 : (isDesktop ? 4 : 2), flex: 1 }}>
+      <Container component="main" sx={{ py: 0, flex: 1 }}>
         <Routes>
-          <Route path="/" element={<Navigate to="/test" replace />} />
+          <Route path="/" element={<Test />} />
           <Route path="/test" element={<Test />} />
+          <Route path="/login-simple" element={<LoginSimple />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/pdls" element={<Pdls />} />
