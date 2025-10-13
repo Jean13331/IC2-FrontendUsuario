@@ -193,7 +193,6 @@ export default function Login() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
         minHeight: '100dvh', // Dynamic viewport height para mobile
         height: 'auto',
         background: 'linear-gradient(180deg, #f9fbfd 0%, #f1f5f9 100%)',

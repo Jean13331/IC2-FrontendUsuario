@@ -200,12 +200,12 @@ export default function Relatorio() {
         doc.setFontSize(14);
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
         doc.setFont(undefined, 'bold');
-        y = addTextWithWrap(title, 20, y, pageWidth - 40, 14, primaryColor) + 5;
+        y = addTextWithWrap(title || '', 20, y, pageWidth - 40, 14, primaryColor) + 5;
 
         // Conteúdo da seção
         if (content && content.trim() !== '') {
           doc.setFont(undefined, 'normal');
-          y = addTextWithWrap(content, 20, y, pageWidth - 40, 10, textColor) + 10;
+          y = addTextWithWrap(content || '', 20, y, pageWidth - 40, 10, textColor) + 10;
         } else {
           doc.setFont(undefined, 'italic');
           y = addTextWithWrap('Não informado', 20, y, pageWidth - 40, 10, secondaryColor) + 10;
@@ -231,26 +231,26 @@ export default function Relatorio() {
         console.warn('⚠️ Erro ao adicionar logo, usando fallback:', error);
         // Fallback: círculo com inicial se a imagem falhar
         doc.setFillColor(255, 255, 255);
-        doc.circle(logoX + logoSize/2, logoY + logoSize/2, logoSize/2, 'F');
+        doc.circle(logoX + logoWidth/2, logoY + logoHeight/2, Math.min(logoWidth, logoHeight)/2, 'F');
         
         doc.setFontSize(16);
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
         doc.setFont(undefined, 'bold');
         const companyInitial = relatorio.pdl.charAt(0).toUpperCase();
-        doc.text(companyInitial, logoX + logoSize/2, logoY + logoSize/2 + 2, { align: 'center' });
+        doc.text(companyInitial, logoX + logoWidth/2, logoY + logoHeight/2 + 2, { align: 'center' });
       }
 
       // Título do relatório
       doc.setFontSize(24);
       doc.setTextColor(255, 255, 255);
       doc.setFont(undefined, 'bold');
-      doc.text('RELATÓRIO DE AVALIAÇÃO PDL', logoX + logoSize + 20, 25);
+      doc.text('RELATÓRIO DE AVALIAÇÃO PDL', logoX + logoWidth + 20, 25);
 
       // Subtítulo
       doc.setFontSize(12);
       doc.setTextColor(255, 255, 255);
       doc.setFont(undefined, 'normal');
-      doc.text('Sistema IC2 Evolutiva', logoX + logoSize + 20, 35);
+      doc.text('Sistema IC2 Evolutiva', logoX + logoWidth + 20, 35);
 
       // Data de geração
       doc.setFontSize(10);

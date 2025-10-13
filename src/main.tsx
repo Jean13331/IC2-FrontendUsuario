@@ -39,11 +39,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         // Estilos para melhorar comportamento com zoom
         'html, body': {
           overflowX: 'hidden',
-          minHeight: '100vh',
           minHeight: '100dvh', // Dynamic viewport height para mobile
         },
         '#root': {
-          minHeight: '100vh',
           minHeight: '100dvh',
           display: 'flex',
           flexDirection: 'column',
