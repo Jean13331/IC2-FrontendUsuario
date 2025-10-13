@@ -1,15 +1,8 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "routes": [
+  "rewrites": [
     {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
   "redirects": [
@@ -18,8 +11,5 @@
       "destination": "/login",
       "permanent": false
     }
-  ],
-  "env": {
-    "VITE_API_BASE_URL": "https://ic2-backend-production.up.railway.app"
-  }
+  ]
 }
