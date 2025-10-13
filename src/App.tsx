@@ -10,6 +10,7 @@ import AprendizadosCompromissos from './pages/AprendizadosCompromissos';
 import AcoesRealizadas from './pages/AcoesRealizadas';
 import AcoesResultados from './pages/AcoesResultados';
 import Relatorio from './pages/Relatorio';
+import Test from './pages/Test';
 
 function AppContent() {
   const theme = useTheme();
@@ -21,7 +22,8 @@ function AppContent() {
     <Box sx={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
       <Container component="main" sx={{ py: isLogin ? 0 : (isDesktop ? 4 : 2), flex: 1 }}>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/test" replace />} />
+          <Route path="/test" element={<Test />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/pdls" element={<Pdls />} />
