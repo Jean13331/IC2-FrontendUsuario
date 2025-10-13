@@ -219,13 +219,14 @@ export default function Relatorio() {
       doc.rect(0, 0, pageWidth, 60, 'F');
 
       // Logo da empresa (imagem real)
-      const logoSize = 30;
+      const logoWidth = 40;
+      const logoHeight = 30;
       const logoX = 20;
       const logoY = 15;
       
       // Adicionar a imagem do logo
       try {
-        doc.addImage(logoImage, 'PNG', logoX, logoY, logoSize, logoSize);
+        doc.addImage(logoImage, 'PNG', logoX, logoY, logoWidth, logoHeight);
         console.log('✅ Logo adicionado com sucesso');
       } catch (error) {
         console.warn('⚠️ Erro ao adicionar logo, usando fallback:', error);

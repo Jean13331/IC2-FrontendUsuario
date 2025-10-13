@@ -14,6 +14,7 @@ export interface PdlAvaliacaoCompleta {
   id_avaliacao: number;
   usuario_id: number;
   pdl_id: number;
+  pdl_nome?: string;
   data_treinamento: string;
   tema_dia: string;
   principais_aprendizados: string;

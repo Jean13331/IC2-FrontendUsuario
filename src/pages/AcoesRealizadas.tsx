@@ -119,7 +119,7 @@ export default function AcoesRealizadas() {
                 setAvaliacoes(avaliacoesResponse.data || []);
               }
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error('❌ Erro ao buscar avaliações:', error);
             console.error('❌ Status:', error.response?.status);
             console.error('❌ Dados do erro:', error.response?.data);
