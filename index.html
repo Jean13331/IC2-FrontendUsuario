@@ -8,7 +8,40 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: linear-gradient(180deg, #f9fbfd 0%, #f1f5f9 100%);
+        font-family: Arial, sans-serif;
+      ">
+        <div style="text-align: center; padding: 20px;">
+          <h1 style="color: #0E2A4A; font-size: 2rem; margin-bottom: 20px;">
+            🎉 Fábrica de Líderes
+          </h1>
+          <p style="color: #666; font-size: 1.2rem; margin-bottom: 30px;">
+            Carregando aplicação...
+          </p>
+          <div style="
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0E2A4A;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+          "></div>
+          <style>
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          </style>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
   </html>
