@@ -2,7 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { CssBaseline, GlobalStyles, ThemeProvider } from '@mui/material';
 import { createTheme, responsiveFontSizes } from '@mui/material/styles';
-import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 
 let theme = createTheme({
@@ -61,9 +60,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           },
         },
       }} />
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <App />
     </ThemeProvider>
   </React.StrictMode>
 );
