@@ -185,29 +185,29 @@ export default function Relatorio() {
       const textColor = [33, 33, 33]; // Cinza escuro
 
       // Função para adicionar texto com quebra de linha
-      const addTextWithWrap = (text: string, x: number, y: number, maxWidth: number, fontSize: number = 10, color: number[] = textColor) => {
+      const addTextWithWrap = (text: string | undefined, x: number, y: number, maxWidth: number, fontSize: number = 10, color: number[] = textColor) => {
         doc.setFontSize(fontSize);
         doc.setTextColor(color[0], color[1], color[2]);
         
-        const lines = doc.splitTextToSize(text, maxWidth);
+        const lines = doc.splitTextToSize(text || '', maxWidth);
         doc.text(lines, x, y);
         return y + (lines.length * (fontSize * 0.4));
       };
 
       // Função para adicionar seção
-      const addSection = (title: string, content: string, y: number) => {
+      const addSection = (title: string | undefined, content: string | undefined, y: number) => {
         // Título da seção
         doc.setFontSize(14);
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         y = addTextWithWrap(title || '', 20, y, pageWidth - 40, 14, primaryColor) + 5;
 
         // Conteúdo da seção
         if (content && content.trim() !== '') {
-          doc.setFont(undefined, 'normal');
+          doc.setFont('helvetica', 'normal');
           y = addTextWithWrap(content || '', 20, y, pageWidth - 40, 10, textColor) + 10;
         } else {
-          doc.setFont(undefined, 'italic');
+          doc.setFont('helvetica', 'italic');
           y = addTextWithWrap('Não informado', 20, y, pageWidth - 40, 10, secondaryColor) + 10;
         }
 
@@ -236,7 +236,7 @@ export default function Relatorio() {
         
         doc.setFontSize(16);
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         const companyInitial = relatorio.pdl.charAt(0).toUpperCase();
         doc.text(companyInitial, logoX + logoWidth/2, logoY + logoHeight/2 + 2, { align: 'center' });
       }
@@ -244,13 +244,13 @@ export default function Relatorio() {
       // Título do relatório
       doc.setFontSize(24);
       doc.setTextColor(255, 255, 255);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.text('RELATÓRIO DE AVALIAÇÃO PDL', logoX + logoWidth + 20, 25);
 
       // Subtítulo
       doc.setFontSize(12);
       doc.setTextColor(255, 255, 255);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('helvetica', 'normal');
       doc.text('Sistema IC2 Evolutiva', logoX + logoWidth + 20, 35);
 
       // Data de geração
@@ -266,12 +266,12 @@ export default function Relatorio() {
       
       doc.setFontSize(12);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-      doc.setFont(undefined, 'bold');
+      doc.setFont('helvetica', 'bold');
       doc.text('INFORMAÇÕES BÁSICAS', 25, yPosition + 10);
 
       doc.setFontSize(10);
       doc.setTextColor(textColor[0], textColor[1], textColor[2]);
-      doc.setFont(undefined, 'normal');
+      doc.setFont('helvetica', 'normal');
       doc.text(`PDL: ${relatorio.pdl}`, 25, yPosition + 20);
       doc.text(`Data do Treinamento: ${formatDate(relatorio.data_treinamento)}`, 25, yPosition + 28);
       doc.text(`Tema do Dia: ${relatorio.tema_dia}`, 25, yPosition + 36);
@@ -328,7 +328,7 @@ export default function Relatorio() {
       if (relatorio.nota_recomendacao) {
         doc.setFontSize(12);
         doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-        doc.setFont(undefined, 'bold');
+        doc.setFont('helvetica', 'bold');
         doc.text('Nota de Recomendação:', 20, yPosition);
         
         doc.setFontSize(16);
