@@ -24,6 +24,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useNavigate } from 'react-router-dom';
 import { login as loginApi } from '../services/auth';
 import { listCompanies, Company } from '../services/companies';
+import logoImage from '../icon/FDL_logotipo 9.png';
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
@@ -201,34 +202,28 @@ export default function Login() {
       }}
     >
       <Stack spacing={3} sx={{ width: '100%' }}>
-        <Box sx={{ textAlign: 'center', mt: { xs: 1, sm: 2 } }}>
-          <Typography
-            component="div"
-            color="primary"
-            sx={{
-              fontWeight: 900,
-              lineHeight: 1,
-              fontSize: { xs: 'clamp(48px, 12vw, 72px)', sm: 'clamp(64px, 15vw, 96px)', md: 'clamp(80px, 18vw, 128px)' },
-              textShadow: '0 3px 10px rgba(14,42,74,0.35)'
-            }}
-          >
-            IC
-          </Typography>
-          <Typography
-            component="div"
-            color="secondary"
-            sx={{
-              letterSpacing: { xs: 'clamp(4px, 2vw, 8px)', sm: 'clamp(6px, 2.5vw, 10px)', md: 'clamp(8px, 3vw, 12px)' },
-              mt: 1,
-              fontWeight: 800,
-              fontSize: { xs: 'clamp(16px, 4vw, 24px)', sm: 'clamp(20px, 5vw, 32px)', md: 'clamp(24px, 6vw, 40px)' },
-              textShadow: '0 2px 8px rgba(37,162,162,0.35)'
-            }}
-          >
-            EVOLUTIVA
-          </Typography>
-          <Divider sx={{ mt: 1.5, mx: 'auto', width: { xs: 'clamp(80px, 20vw, 100px)', sm: 'clamp(100px, 25vw, 120px)' }, borderColor: 'secondary.main', opacity: 0.6 }} />
-        </Box>
+         <Box sx={{ textAlign: 'center', mt: { xs: 1, sm: 2 } }}>
+           <Box
+             component="img"
+             src={logoImage}
+             alt="Fábrica de Líderes"
+             sx={{
+               width: { xs: '420px', sm: '500px', md: '580px' },
+               height: 'auto',
+               maxWidth: '100%',
+               objectFit: 'contain',
+               filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))',
+               mb: 3
+             }}
+           />
+           <Divider sx={{ 
+             mt: 2, 
+             mx: 'auto', 
+             width: { xs: 'clamp(80px, 20vw, 100px)', sm: 'clamp(100px, 25vw, 120px)' }, 
+             borderColor: 'secondary.main', 
+             opacity: 0.6 
+           }} />
+         </Box>
         <Paper elevation={6} sx={{ 
           p: { xs: 2, sm: 3, md: 4 }, 
           borderRadius: 3, 

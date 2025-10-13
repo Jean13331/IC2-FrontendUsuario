@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Box, Button, Container, Paper, Stack, TextField, Typography, IconButton, InputAdornment, Drawer, List, ListItem, ListItemText, FormControl, InputLabel, Select, MenuItem, Autocomplete, Alert } from '@mui/material';
+import { Box, Button, Container, Paper, Stack, TextField, Typography, IconButton, InputAdornment, Drawer, List, ListItem, ListItemText, FormControl, InputLabel, Select, MenuItem, Autocomplete, Alert, Divider } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { register as registerApi } from '../services/auth';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { listCompanies, Company } from '../services/companies';
+import logoImage from '../icon/FDL_logotipo 9.png';
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
@@ -81,33 +82,28 @@ export default function Register() {
         px: { xs: 1, sm: 2 }, // Padding horizontal para evitar overflow
       }}
     >
-      <Box sx={{ textAlign: 'center', mt: { xs: 1, sm: 2 } }}>
-        <Typography
-          component="div"
-          color="primary"
-          sx={{
-            fontWeight: 900,
-            lineHeight: 1,
-            fontSize: { xs: 'clamp(40px, 10vw, 56px)', sm: 'clamp(48px, 12vw, 72px)', md: 'clamp(64px, 15vw, 96px)' },
-            textShadow: '0 3px 10px rgba(14,42,74,0.35)'
-          }}
-        >
-          IC
-        </Typography>
-        <Typography
-          component="div"
-          color="secondary"
-          sx={{
-            letterSpacing: { xs: 'clamp(4px, 2vw, 8px)', sm: 'clamp(6px, 2.5vw, 10px)' },
-            mt: 1,
-            fontWeight: 800,
-            fontSize: { xs: 'clamp(14px, 3.5vw, 22px)', sm: 'clamp(18px, 4.5vw, 28px)' },
-            textShadow: '0 2px 8px rgba(37,162,162,0.35)'
-          }}
-        >
-          EVOLUTIVA
-        </Typography>
-      </Box>
+        <Box sx={{ textAlign: 'center', mt: { xs: 1, sm: 2 } }}>
+          <Box
+            component="img"
+            src={logoImage}
+            alt="Fábrica de Líderes"
+            sx={{
+              width: { xs: '320px', sm: '400px', md: '480px' },
+              height: 'auto',
+              maxWidth: '100%',
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.15))',
+              mb: 3
+            }}
+          />
+          <Divider sx={{ 
+            mt: 2, 
+            mx: 'auto', 
+            width: { xs: 'clamp(80px, 20vw, 100px)', sm: 'clamp(100px, 25vw, 120px)' }, 
+            borderColor: 'secondary.main', 
+            opacity: 0.6 
+          }} />
+        </Box>
       <Paper elevation={6} sx={{ 
         p: { xs: 2, sm: 3, md: 4 }, 
         borderRadius: 3, 

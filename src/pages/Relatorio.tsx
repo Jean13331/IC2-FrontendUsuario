@@ -32,7 +32,7 @@ import {
 import ResponsiveAppBar from '../components/ResponsiveAppBar';
 import api from '../services/api';
 import jsPDF from 'jspdf';
-import logoImage from '../icon/Logo.png';
+import logoImage from '../icon/FDL_logotipo 8.png';
 
 interface RelatorioData {
   id: number;
