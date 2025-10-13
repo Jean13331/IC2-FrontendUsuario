@@ -20,6 +20,13 @@
       "dest": "/index.html"
     }
   ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/login",
+      "permanent": false
+    }
+  ],
   "env": {
     "VITE_API_BASE_URL": "https://ic2-backend-production.up.railway.app"
   }
