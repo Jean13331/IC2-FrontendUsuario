@@ -11,12 +11,9 @@ import {
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link as RouterLink } from 'react-router-dom';
-import { requestPasswordReset } from '../services/auth';
 import logoImage from '../icon/FDL_logotipo 9.png';
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -24,22 +21,7 @@ export default function ForgotPassword() {
     event.preventDefault();
     setError(null);
     setSuccess(null);
-
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError('Informe um e-mail válido.');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      await requestPasswordReset(email);
-      setSuccess('Enviamos um código para redefinir sua senha. Confira seu email.');
-    } catch (err: any) {
-      const apiMessage = err?.response?.data?.message;
-      setError(apiMessage || 'Não foi possível enviar o código. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
+    setError('Funcionalidade em desenvolvimento.');
   };
 
   return (
@@ -94,8 +76,7 @@ export default function ForgotPassword() {
           </Typography>
 
           <Typography variant="body2" sx={{ mb: 3, textAlign: 'center' }}>
-            Informe o e-mail utilizado no cadastro. Nós enviaremos um código para
-            você redefinir sua senha.
+            A recuperação de senha está em desenvolvimento. Avisaremos assim que o envio automático estiver disponível.
           </Typography>
 
           {error && (
@@ -113,23 +94,19 @@ export default function ForgotPassword() {
           <Box component="form" onSubmit={handleSubmit}>
             <Stack spacing={2}>
               <TextField
-                name="email"
                 label="E-mail cadastrado"
-                type="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                required
+                value="Em desenvolvimento"
                 fullWidth
-                autoFocus
+                disabled
               />
 
               <Button
                 type="submit"
                 variant="contained"
                 size="large"
-                disabled={loading}
+                disabled
               >
-                {loading ? 'Enviando...' : 'Enviar código'}
+                Em desenvolvimento
               </Button>
 
               <Button
