@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { login as loginApi } from '../services/auth';
 import { listCompanies, Company } from '../services/companies';
 import logoImage from '../icon/FDL_logotipo 9.png';
@@ -356,7 +356,12 @@ export default function Login() {
                 Registrar
               </Button>
               <Box sx={{ textAlign: 'center' }}>
-                <Link href="#" variant="body2" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                <Link
+                  component={RouterLink}
+                  to="/forgot-password"
+                  variant="body2"
+                  sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+                >
                   Esqueci minha senha
                 </Link>
               </Box>

@@ -9,6 +9,7 @@ import AprendizadosCompromissos from './pages/AprendizadosCompromissos';
 import AcoesRealizadas from './pages/AcoesRealizadas';
 import AcoesResultados from './pages/AcoesResultados';
 import Relatorio from './pages/Relatorio';
+import ForgotPassword from './pages/ForgotPassword';
 
 function AppContent() {
   return (
@@ -18,6 +19,7 @@ function AppContent() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/pdls" element={<Pdls />} />
           <Route path="/home" element={<Home />} />
           <Route path="/empresa/:companySlug/pdl/:pdlSlug" element={<PdlDetail />} />

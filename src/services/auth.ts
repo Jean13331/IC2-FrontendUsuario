@@ -24,5 +24,10 @@ export async function register(userData: {
   return data;
 }
 
+export async function requestPasswordReset(email: string) {
+  const { data } = await api.post('/api/auth/forgot-password', { email });
+  return data;
+}
+
 
 
