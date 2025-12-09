@@ -356,7 +356,12 @@ export default function Login() {
                 Registrar
               </Button>
               <Box sx={{ textAlign: 'center' }}>
-                <Link href="#" variant="body2" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                <Link
+                  component="button"
+                  variant="body2"
+                  onClick={() => navigate('/forgot-password')}
+                  sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, cursor: 'pointer' }}
+                >
                   Esqueci minha senha
                 </Link>
               </Box>

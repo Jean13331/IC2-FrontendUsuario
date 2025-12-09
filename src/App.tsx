@@ -2,6 +2,8 @@ import { Box, Container } from '@mui/material';
 import { Route, Routes, BrowserRouter, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Pdls from './pages/Pdls';
 import Home from './pages/Home';
 import PdlDetail from './pages/PdlDetail';
@@ -18,6 +20,8 @@ function AppContent() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/pdls" element={<Pdls />} />
           <Route path="/home" element={<Home />} />
           <Route path="/empresa/:companySlug/pdl/:pdlSlug" element={<PdlDetail />} />
