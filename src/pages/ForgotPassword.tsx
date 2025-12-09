@@ -112,7 +112,7 @@ export default function ForgotPassword() {
                 Se o e-mail informado existir em nosso sistema, você receberá instruções para recuperar sua senha.
               </Alert>
               <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
-                Verifique sua caixa de entrada e siga as instruções do e-mail.
+                Verifique sua caixa de entrada e também a pasta de <strong>spam/lixo eletrônico</strong> e siga as instruções do e-mail.
               </Typography>
               <Button
                 fullWidth
