@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { useNavigate } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { login as loginApi } from '../services/auth';
 import { listCompanies, Company } from '../services/companies';
 import logoImage from '../icon/FDL_logotipo 9.png';
