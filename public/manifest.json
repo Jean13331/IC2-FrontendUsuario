@@ -1,7 +1,7 @@
 {
   "name": "Desperta Líder",
   "short_name": "Desperta Líder",
-  "description": "Sistema de avaliação e desenvolvimento de líderes",
+  "description": "Sistema de avaliação e desenvolvimento de lideres",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
