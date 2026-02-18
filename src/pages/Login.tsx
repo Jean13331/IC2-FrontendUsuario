@@ -24,7 +24,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { login as loginApi } from '../services/auth';
 import { listCompanies, Company } from '../services/companies';
-import logoImage from '../icon/FDL_logotipo 9.png';
+import fallbackLogoImage from '../icon/FDL_logotipo 9.png';
+
+const NEW_LOGO_SRC = '/assets/LOGO_FDL_BRASIL_Prancheta_1.jpg.png';
 
 export default function Login() {
   const [error, setError] = useState<string | null>(null);
@@ -42,6 +44,7 @@ export default function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
   const [reactivationSuccess, setReactivationSuccess] = useState(false);
+  const [logoSrc, setLogoSrc] = useState(NEW_LOGO_SRC);
   const REMEMBER_KEY = 'ic2.remember.v1';
 
   const encode = (text: string) => {
@@ -204,8 +207,11 @@ export default function Login() {
          <Box sx={{ textAlign: 'center', mt: { xs: 1, sm: 2 } }}>
            <Box
              component="img"
-             src={logoImage}
+             src={logoSrc}
              alt="Fábrica de Líderes"
+             onError={() => {
+               if (logoSrc !== fallbackLogoImage) setLogoSrc(fallbackLogoImage);
+             }}
              sx={{
                width: { xs: '420px', sm: '500px', md: '580px' },
                height: 'auto',
