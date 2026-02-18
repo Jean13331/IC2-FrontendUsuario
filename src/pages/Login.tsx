@@ -363,10 +363,10 @@ export default function Login() {
               </Button>
               <Box sx={{ textAlign: 'center' }}>
                 <Link
-                  component={RouterLink}
-                  to="/forgot-password"
+                  component="button"
                   variant="body2"
-                  sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+                  onClick={() => navigate('/forgot-password')}
+                  sx={{ fontSize: { xs: '0.875rem', sm: '1rem' }, cursor: 'pointer' }}
                 >
                   Esqueci minha senha
                 </Link>
