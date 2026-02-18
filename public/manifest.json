@@ -1,6 +1,6 @@
 {
-  "name": "Desperta Líderes",
-  "short_name": "Desperta Líderes",
+  "name": "Fábrica de Líderes",
+  "short_name": "FDL",
   "description": "Sistema de avaliação e desenvolvimento de líderes",
   "start_url": "/",
   "display": "standalone",
@@ -11,13 +11,13 @@
       "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
