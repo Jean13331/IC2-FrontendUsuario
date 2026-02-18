@@ -65,15 +65,6 @@ export default function Login() {
     try { localStorage.removeItem(REMEMBER_KEY); } catch {}
   };
 
-  // Bloqueia scroll enquanto a tela de login está ativa
-  useEffect(() => {
-    const original = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = original;
-    };
-  }, []);
-
   const loadCompanies = async () => {
     try {
       setCompaniesLoading(true);
@@ -193,16 +184,15 @@ export default function Login() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
-        height: '100vh',
-        overflow: 'hidden',
+        minHeight: '100dvh',
+        height: 'auto',
         background: 'linear-gradient(180deg, #f9fbfd 0%, #f1f5f9 100%)',
-        py: { xs: 2, sm: 4 }, // Padding vertical para espaçamento
-        px: { xs: 1, sm: 2 }, // Padding horizontal para evitar overflow
+        py: { xs: 2, sm: 4 },
+        px: { xs: 1, sm: 2 },
       }}
     >
-      <Stack spacing={3} sx={{ width: '100%', justifyContent: 'center' }}>
-         <Box sx={{ textAlign: 'center', mt: 0 }}>
+      <Stack spacing={3} sx={{ width: '100%' }}>
+         <Box sx={{ textAlign: 'center', mt: { xs: 1, sm: 2 } }}>
            <Box
              component="img"
              src={logoImage}
