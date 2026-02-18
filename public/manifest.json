@@ -1,6 +1,6 @@
 {
-  "name": "Desperta Líderes",
-  "short_name": "Desperta Líderes",
+  "name": "Desperta Líder",
+  "short_name": "Desperta Líder",
   "description": "Sistema de avaliação e desenvolvimento de líderes",
   "start_url": "/",
   "display": "standalone",
