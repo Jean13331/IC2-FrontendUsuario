@@ -207,7 +207,7 @@ export default function Login() {
              src={logoImage}
              alt="Fábrica de Líderes"
              sx={{
-               width: { xs: '420px', sm: '500px', md: '580px' },
+               width: { xs: '260px', sm: '320px', md: '380px' },
                height: 'auto',
                maxWidth: '100%',
                objectFit: 'contain',
