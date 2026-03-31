@@ -5,7 +5,7 @@ import { register as registerApi } from '../services/auth';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { listCompanies, Company } from '../services/companies';
-import logoImage from '../icon/FDL_logotipo 9.png';
+import logoImage from '../icon/LOGO_FDL_BRASIL_Prancheta_1.jpg.png';
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);

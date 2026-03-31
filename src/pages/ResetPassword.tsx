@@ -16,7 +16,7 @@ import {
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { resetPassword, verifyResetToken } from '../services/auth';
-import logoImage from '../icon/FDL_logotipo 9.png';
+import logoImage from '../icon/LOGO_FDL_BRASIL_Prancheta_1.jpg.png';
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();

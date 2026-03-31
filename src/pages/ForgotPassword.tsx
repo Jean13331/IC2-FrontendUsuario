@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { forgotPassword } from '../services/auth';
-import logoImage from '../icon/FDL_logotipo 9.png';
+import logoImage from '../icon/LOGO_FDL_BRASIL_Prancheta_1.jpg.png';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
